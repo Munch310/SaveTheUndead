@@ -1,14 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class StartGameBtn : MonoBehaviour
 {
-    public GameObject characterSelectBtn;
-
-    public void OnClickedCharcterSelectBtn()
+    private int selectedCharacterIndex = -1;
+    public void ReceiveCharacterIndex(int characterIndex)
     {
-        AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
-        UIManager.instance.SetGameObjectActive(characterSelectBtn, true);
+        selectedCharacterIndex = characterIndex;
+    }
+
+    public void StartGame()
+    {
+        if (selectedCharacterIndex != -1)
+        {
+            PlayerPrefs.SetInt("SelectedCharacterIndex", selectedCharacterIndex);
+            PlayerPrefs.Save();
+            SceneManager.LoadScene("MainScene");
+        }
     }
 }

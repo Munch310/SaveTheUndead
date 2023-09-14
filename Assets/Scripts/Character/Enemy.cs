@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class Enemy : MonoBehaviour, ICharacter
 {
@@ -36,13 +33,32 @@ public class Enemy : MonoBehaviour, ICharacter
 
     public void AttackCharacter()
     {
-        BulletManager.Instance.ShotEnemyBullet(spawnBullet.position, Random.Range(1f,2f));
+        int rate = Random.Range(0, 100);
+        BulletType type;
+        float speed;
+        if (rate >= 98)
+        {
+            type = BulletType.Bomb;
+            speed = Random.Range(3.5f, 4.5f);
+        }
+        else if(rate >= 95)
+        {
+            type = BulletType.Potion;
+            speed = Random.Range(3.5f, 4.5f);
+        }
+        else
+        {
+            type = BulletType.Enemy;
+            speed = Random.Range(0.5f, 2f);
+        }
+
+        BulletManager.Instance.ShotBullet(type, spawnBullet.position, speed);
         remainCoolTime = COOL_TIME;
     }
 
     private void RotateEnemyToPlayer()
     {
-        moveDirection = (EnemyManager.Instance.player.transform.position - transform.position).normalized; // 임시로 EnemyManager 참조
+        moveDirection = (PlayerManager.Instance.player.transform.position - transform.position).normalized;
         float rotZ = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
         FlipXEnemy(Mathf.Abs(rotZ) > 90);
     }    
@@ -74,5 +90,9 @@ public class Enemy : MonoBehaviour, ICharacter
         
     }
 
-    public void TakeDamage() {}
+    public void TakeDamage() 
+    {
+        EnemyManager.Instance.Enemies.Remove(this);
+        Destroy(gameObject);
+    }
 }
